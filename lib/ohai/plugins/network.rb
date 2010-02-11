@@ -40,13 +40,16 @@ unless network[:default_interface].nil?
   im = find_ip_and_mac(network["interfaces"][network[:default_interface]]["addresses"])
   ipaddress im.shift
   macaddress im.shift
-else
-  network["interfaces"].keys.sort.each do |iface|
-    if network["interfaces"][iface]["encapsulation"].eql?("Ethernet")
-      im = find_ip_and_mac(network["interfaces"][iface]["addresses"])
-      ipaddress im.shift
-      macaddress im.shift
-      return if (ipaddress and macaddress)
-    end
+  return if (ipaddress and macaddress)
+end
+
+# fall through if couldn't find default interface
+network["interfaces"].keys.sort.each do |iface|
+  if network["interfaces"][iface]["encapsulation"].eql?("Ethernet")
+    im = find_ip_and_mac(network["interfaces"][iface]["addresses"])
+    ipaddress im.shift
+    macaddress im.shift
+    return if (ipaddress and macaddress)
   end
 end
+
